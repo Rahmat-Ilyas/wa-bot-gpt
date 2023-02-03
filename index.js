@@ -1,65 +1,77 @@
 const { Configuration, OpenAIApi } = require('openai');
 const qrcode = require('qrcode-terminal');
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const { API_KEY_AI } = require('./config');
+const http = require('http');
+const fs = require('fs');
+const QRCode = require('qrcode');
 
-const configuration = new Configuration({
-	apiKey: API_KEY_AI,
-});
-const openai = new OpenAIApi(configuration);
 
-const client = new Client({
-    puppeteer: {
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox'
-        ],
-        ignoreDefaultArgs: ['--disable-extensions'],
-        authStrategy: new LocalAuth()
-    }
-	// authStrategy: new LocalAuth(),
-});
+function handleServer(req, res) {
+    const configuration = new Configuration({
+        apiKey: API_KEY_AI,
+    });
+    const openai = new OpenAIApi(configuration);
 
-client.on('qr', (qr) => {
-	qrcode.generate(qr, { small: true });
-});
+    const client = new Client({
+        authStrategy: new LocalAuth(),
+    });
 
-client.on('ready', () => {
-	console.log('Client is ready!');
-});
+    client.on('qr', (qr) => {
+        // qrcode.generate(qr, { small: true });
 
-client.on('message', async (msg) => {
-	const text = msg.body.toLowerCase() || '';
-	console.log(msg.from + ': ' + text);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        QRCode.toDataURL(qr, function (err, url) {
+            // console.log(url)
+            res.write('<img src="' + url + '">');
+            res.end();
+            console.log("Login dlu guys");
+        });
+    });
 
-    // check pesan
-	if (text.substring(0, 4) == '!gpt' || text.substring(0, 1) == '?') {
+    client.on('ready', () => {
+        console.log('Client is ready!');
+        res.end("ready");
+    });
+
+    client.on('message', async (msg) => {
+        const text = msg.body.toLowerCase() || '';
+        console.log(msg.from + ': ' + text);
+
+        // check pesan
+        if (text.substring(0, 4) == '!gpt' || text.substring(0, 1) == '?') {
             // Kirim pesan ke OpenAi dan dapatkan balasan
-		var textfix;
-		if (text.substring(0, 4) == '!gpt') textfix = text.substring(4, text.length);
-		else if (text.substring(0, 1) == '?') textfix = text.substring(1, text.length);
-		const response = await openai.createCompletion({
-			model: 'text-davinci-003',
-			prompt: textfix,
-			temperature: 0.3,
-			max_tokens: 3000,
-			top_p: 1.0,
-			frequency_penalty: 0.0,
-			presence_penalty: 0.0,
-		});
-        // Kirim balasan kepada pengirim pesan
-		msg.reply(response.data.choices[0].text);
-	} else if (text.substring(0, 4) == '!img') {
-		const response = await openai.createImage({
-			prompt: text.substring(4, text.length),
-			n: 1,
-			size: "1024x1024",
-		});
-		image_url = response.data.data[0].url;
-		const media = await MessageMedia.fromUrl(image_url);
-        // const sendMessageData = await client.sendMessage(media, text.substring(4, text.length));
-		msg.reply(media);
-	}
-});
+            var textfix;
+            if (text.substring(0, 4) == '!gpt') textfix = text.substring(4, text.length);
+            else if (text.substring(0, 1) == '?') textfix = text.substring(1, text.length);
+            const response = await openai.createCompletion({
+                model: 'text-davinci-003',
+                prompt: textfix,
+                temperature: 0.3,
+                max_tokens: 3000,
+                top_p: 1.0,
+                frequency_penalty: 0.0,
+                presence_penalty: 0.0,
+            });
+            // Kirim balasan kepada pengirim pesan
+            msg.reply(response.data.choices[0].text);
+        } else if (text.substring(0, 4) == '!img') {
+            const response = await openai.createImage({
+                prompt: text.substring(4, text.length),
+                n: 1,
+                size: "1024x1024",
+            });
+            image_url = response.data.data[0].url;
+            const media = await MessageMedia.fromUrl(image_url);
+            // const sendMessageData = await client.sendMessage(media, text.substring(4, text.length));
+            msg.reply(media);
+        }
+    });
 
-client.initialize();
+    client.initialize();
+}
+
+const server = http.createServer(handleServer);
+server.listen(3000, function () {
+    console.log("listening 3000");
+});
