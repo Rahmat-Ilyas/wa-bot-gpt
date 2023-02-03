@@ -8,18 +8,16 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-// const client = new Client({
-//     puppeteer: {
-//         args: [
-//           '--no-sandbox',
-//           '--disable-setuid-sandbox'
-//         ],
-//         authStrategy: new LocalAuth()
-//     }
-// 	// authStrategy: new LocalAuth(),
-// });
-
-const client = new Client();
+const client = new Client({
+    puppeteer: {
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox'
+        ],
+        authStrategy: new LocalAuth()
+    }
+	// authStrategy: new LocalAuth(),
+});
 
 client.on('qr', (qr) => {
 	qrcode.generate(qr, { small: true });
