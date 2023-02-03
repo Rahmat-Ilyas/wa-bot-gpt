@@ -14,6 +14,7 @@ const client = new Client({
           '--no-sandbox',
           '--disable-setuid-sandbox'
         ],
+        ignoreDefaultArgs: ['--disable-extensions'],
         authStrategy: new LocalAuth()
     }
 	// authStrategy: new LocalAuth(),
