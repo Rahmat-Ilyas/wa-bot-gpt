@@ -1,6 +1,6 @@
 const { Configuration, OpenAIApi } = require('openai');
 const qrcode = require('qrcode-terminal');
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const { API_KEY_AI } = require('./config');
 
 const configuration = new Configuration({
