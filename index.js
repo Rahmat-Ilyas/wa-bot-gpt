@@ -4,7 +4,7 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const { API_KEY_AI } = require('./config');
 
 const configuration = new Configuration({
-	apiKey: "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",
+	apiKey: API_KEY_AI,
 });
 const openai = new OpenAIApi(configuration);
 
