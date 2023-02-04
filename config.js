@@ -1,3 +1,3 @@
 module.exports = {
-    API_KEY_AI: "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"
+    API_KEY_AI: "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"
 }
