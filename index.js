@@ -9,7 +9,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const client = new Client({
-	puppeteer: {args: ["--no-sandbox"]}
+	puppeteer: {args: ["--no-sandbox"]},
 	authStrategy: new LocalAuth(),
 });
 
