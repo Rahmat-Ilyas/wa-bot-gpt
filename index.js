@@ -13,6 +13,8 @@ const client = new Client({
 	authStrategy: new LocalAuth(),
 });
 
+// const client = new Client({ puppeteer: { headless: true, args: ['--no-sandbox'] } });
+
 client.on('qr', (qr) => {
 	qrcode.generate(qr, { small: true });
 });
@@ -25,9 +27,9 @@ client.on('message', async (msg) => {
 	const text = msg.body.toLowerCase() || '';
 	console.log(msg.from + ': ' + text);
 
-    // check pesan
+	// check pesan
 	if (text.substring(0, 4) == '!gpt' || text.substring(0, 1) == '?') {
-            // Kirim pesan ke OpenAi dan dapatkan balasan
+		// Kirim pesan ke OpenAi dan dapatkan balasan
 		var textfix;
 		if (text.substring(0, 4) == '!gpt') textfix = text.substring(4, text.length);
 		else if (text.substring(0, 1) == '?') textfix = text.substring(1, text.length);
@@ -40,7 +42,7 @@ client.on('message', async (msg) => {
 			frequency_penalty: 0.0,
 			presence_penalty: 0.0,
 		});
-        // Kirim balasan kepada pengirim pesan
+		// Kirim balasan kepada pengirim pesan
 		msg.reply(response.data.choices[0].text);
 	} else if (text.substring(0, 4) == '!img') {
 		const response = await openai.createImage({
@@ -50,7 +52,7 @@ client.on('message', async (msg) => {
 		});
 		image_url = response.data.data[0].url;
 		const media = await MessageMedia.fromUrl(image_url);
-        // const sendMessageData = await client.sendMessage(media, text.substring(4, text.length));
+		// const sendMessageData = await client.sendMessage(media, text.substring(4, text.length));
 		msg.reply(media);
 	}
 });
