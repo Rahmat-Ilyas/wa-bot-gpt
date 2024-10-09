@@ -12,8 +12,6 @@ firebase-debug.*.log*
 
 .firebase/
 
-config.js
-
 # Firebase config
 
 # Uncomment this if you'd like others to create their own Firebase project.
@@ -70,3 +68,4 @@ build/Release
 .env
 
 serviceAccountKey.json
+config.js
