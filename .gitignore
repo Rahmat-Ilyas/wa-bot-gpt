@@ -8,8 +8,11 @@ yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
 .wwebjs_auth/
+.wwebjs_cache/
 
 .firebase/
+
+config.js
 
 # Firebase config
 
@@ -65,3 +68,5 @@ build/Release
 
 # dotenv environment variables file
 .env
+
+serviceAccountKey.json
